@@ -17,6 +17,9 @@ SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 def get_sales_data():
     """
     Get sales figures input from the user.
+    Run a while loop to collect a valid string of data from the user
+    via the terminal, which must be a string of 6 numbers separated
+    by commas. The loop will repeatedly request data, until it is valid.
     """
     while True:
         print("Please enter sales data from the last market.")
@@ -55,13 +58,13 @@ def validate_data(values):
 
 def update_worksheet(data, worksheet):
     """
-    Single function to update worksheets,
-    adding a new row with the list data provided
+    Receives a list of integers to be inserted into a worksheet
+    Update the relevant worksheet with the data provided
     """
-    print(f"Updating {worksheet} worksheet")
-    current_worksheet = SHEET.worksheet(worksheet)
-    current_worksheet.append_row(data)
-    print(f"{worksheet} worksheet updated successfully \n")
+    print(f"Updating {worksheet} worksheet...\n")
+    worksheet_to_update = SHEET.worksheet(worksheet)
+    worksheet_to_update.append_row(data)
+    print(f"{worksheet} worksheet updated successfully\n")
 
 
 def calculate_surplus_data(sales_row):
@@ -70,7 +73,7 @@ def calculate_surplus_data(sales_row):
 
     The surplus is defined as the sales figure subtracted from the stock:
     - Positive surplus indicates waste
-    - Negative surplus indicates extra made when stock was sold out
+    - Negative surplus indicates extra made when stock was sold out.
     """
     print("Calculating surplus data...\n")
     stock = SHEET.worksheet("stock").get_all_values()
@@ -84,9 +87,25 @@ def calculate_surplus_data(sales_row):
     return surplus_data
 
 
+def get_last_5_entries_sales():
+    """
+    Collects columns of data from sales worksheet, collecting
+    the last 5 entries for each sandwich and returns the data
+    as a list of lists.
+    """
+    sales = SHEET.worksheet("sales")
+
+    columns = []
+    for ind in range(1, 7):
+        column = sales.col_values(ind)
+        columns.append(column[-5:])
+
+    return columns
+
+
 def main():
     """
-    Run all program functions.
+    Run all program functions
     """
     data = get_sales_data()
     sales_data = [int(num) for num in data]
